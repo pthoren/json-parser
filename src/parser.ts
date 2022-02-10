@@ -41,6 +41,7 @@ export function parser(tokens: Token[]) {
       }
     }
     */
+
   function array(): any[] {
     const values = [];
 
@@ -48,9 +49,9 @@ export function parser(tokens: Token[]) {
       if (match(TokenType.LEFT_BRACKET)) {
         values.push(array());
       } else if (match(TokenType.COMMA)) {
-        values.push(consume(TokenType.NUMBER).literal);
-      } else if (check(TokenType.NUMBER)) {
-        values.push(literal());
+        values.push(value());
+      } else if (match(TokenType.NUMBER)) {
+        values.push(previous().literal);
       }
     }
 
@@ -59,8 +60,12 @@ export function parser(tokens: Token[]) {
     return values;
   }
 
-  function literal() {
-    return advance().literal;
+  function value() {
+    if (match(TokenType.LEFT_BRACKET)) {
+      return array();
+    } else if (match(TokenType.NUMBER)) {
+      return previous().literal;
+    }
   }
 
   function advance() {
@@ -104,6 +109,10 @@ export function parser(tokens: Token[]) {
 
   function peek() {
     return tokens[current];
+  }
+
+  function previous() {
+    return tokens[current - 1];
   }
 
   parseTokens();
