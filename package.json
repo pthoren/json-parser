@@ -5,8 +5,11 @@
   "repository": "git@github.com:pthoren/json-parser.git",
   "author": "Paul Thoren <paul.thoren@gmail.com>",
   "license": "MIT",
+  "jest": {
+    "verbose": true
+  },
   "scripts": {
-    "test": "jest"
+    "test": "jest --verbose"
   },
   "devDependencies": {
     "@types/jest": "^27.4.0",

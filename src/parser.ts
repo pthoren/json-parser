@@ -50,7 +50,7 @@ export function parser(tokens: Token[]) {
         values.push(array());
       } else if (match(TokenType.COMMA)) {
         values.push(value());
-      } else if (match(TokenType.NUMBER)) {
+      } else if (match(TokenType.NUMBER, TokenType.STRING)) {
         values.push(previous().literal);
       }
     }
@@ -63,7 +63,7 @@ export function parser(tokens: Token[]) {
   function value() {
     if (match(TokenType.LEFT_BRACKET)) {
       return array();
-    } else if (match(TokenType.NUMBER)) {
+    } else if (match(TokenType.NUMBER, TokenType.STRING)) {
       return previous().literal;
     }
   }
