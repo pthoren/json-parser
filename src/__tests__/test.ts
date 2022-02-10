@@ -10,7 +10,7 @@ describe("parseJson", () => {
   });
 
   it("array with numbers", () => {
-    expect(parseJson("[0, 1, 1.5, 2, 3]")).toEqual([0, 1, 1.5, 2, 3]);
+    expect(parseJson("[0, 1, 1.5, -2, 3]")).toEqual([0, 1, 1.5, -2, 3]);
   });
 
   it("nested arrays", () => {

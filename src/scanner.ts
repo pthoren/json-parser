@@ -33,9 +33,6 @@ export function scanner(source: string) {
       case ",":
         addToken(TokenType.COMMA);
         break;
-      case "-":
-        addToken(TokenType.MINUS);
-        break;
       case '"':
         string();
         break;
@@ -46,10 +43,10 @@ export function scanner(source: string) {
         // skip whitespace
         break;
       default:
-        if (isDigit(c)) {
+        if (isDigit(c) || (c === "-" && isDigit(peek()))) {
           number();
         } else {
-          throw new Error("Unexpected character");
+          throw new Error(`Unexpected character ${c}`);
         }
     }
   }
@@ -82,9 +79,11 @@ export function scanner(source: string) {
       while (isDigit(peek())) advance();
     }
 
+    const value = Number.parseFloat(source.substring(start, current));
+
     addToken(
       TokenType.NUMBER,
-      Number.parseFloat(source.substring(start, current))
+      value
     );
   }
 

@@ -5,9 +5,9 @@ export enum TokenType {
   RIGHT_BRACE = "RIGHT_BRACE",
   COMMA = "COMMA",
   DOT = "DOT",
-  MINUS = "MINUS",
   STRING = "STRING",
   NUMBER = "NUMBER",
+  BOOLEAN = "BOOLEAN",
 }
 
 export class Token {
