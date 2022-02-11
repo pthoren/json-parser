@@ -45,7 +45,7 @@ export function scanner(source: string) {
       default:
         if (isDigit(c) || (c === "-" && isDigit(peek()))) {
           number();
-        } else {
+        } else if (!boolean(c)) {
           throw new Error(`Unexpected character ${c}`);
         }
     }
@@ -72,7 +72,7 @@ export function scanner(source: string) {
       advance();
     }
 
-    if (peek() === "." && isDigit(peekNext())) {
+    if (peek() === "." && isDigit(peek(1))) {
       // consume dot
       advance();
 
@@ -87,16 +87,26 @@ export function scanner(source: string) {
     );
   }
 
+  function boolean(c: string) {
+    if (c === "t" && source.substring(current, current + 3) === "rue") {
+      current += 3;
+      addToken(TokenType.BOOLEAN, true);
+      return true;
+    } else if (c === "f" && source.substring(current, current + 4) === "alse") {
+      current += 4;
+      addToken(TokenType.BOOLEAN, false);
+      return true;
+    }
+
+    return false;
+  }
+
   function isAtEnd() {
     return current >= source.length;
   }
 
-  function peek() {
-    return source[current];
-  }
-
-  function peekNext() {
-    return source[current + 1];
+  function peek(lookahead?: number) {
+    return source[current + (lookahead ?? 0)];
   }
 
   function advance() {

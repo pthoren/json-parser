@@ -25,4 +25,13 @@ describe("parseJson", () => {
   it("strings", () => {
     expect(parseJson('["foo", "bar", ["baz"]]')).toEqual(["foo", "bar", ["baz"]]);
   });
+
+  it("boolean", () => {
+    expect(parseJson("true")).toEqual(true);
+    expect(parseJson("false")).toEqual(false);
+  });
+
+  it ("booleans", () => {
+    expect(parseJson('[true, false, [false, "foo"], 0]')).toEqual([true, false, [false, "foo"], 0]);
+  });
 });

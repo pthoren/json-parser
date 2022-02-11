@@ -13,10 +13,12 @@ export function parser(tokens: Token[]) {
 
   function parseToken() {
     const token = advance();
+    console.debug("parseToken", token);
 
     switch (token.type) {
       case TokenType.LEFT_BRACKET:
         return array();
+      case TokenType.BOOLEAN:
       case TokenType.NUMBER:
         return token.literal;
       default:
@@ -50,7 +52,7 @@ export function parser(tokens: Token[]) {
         values.push(array());
       } else if (match(TokenType.COMMA)) {
         values.push(value());
-      } else if (match(TokenType.NUMBER, TokenType.STRING)) {
+      } else if (match(TokenType.NUMBER, TokenType.STRING, TokenType.BOOLEAN)) {
         values.push(previous().literal);
       }
     }
@@ -63,7 +65,7 @@ export function parser(tokens: Token[]) {
   function value() {
     if (match(TokenType.LEFT_BRACKET)) {
       return array();
-    } else if (match(TokenType.NUMBER, TokenType.STRING)) {
+    } else if (match(TokenType.NUMBER, TokenType.STRING, TokenType.BOOLEAN)) {
       return previous().literal;
     }
   }
