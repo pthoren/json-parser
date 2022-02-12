@@ -5,6 +5,7 @@ export enum TokenType {
   RIGHT_BRACE = "RIGHT_BRACE",
   COMMA = "COMMA",
   DOT = "DOT",
+  COLON = "COLON",
   STRING = "STRING",
   NUMBER = "NUMBER",
   BOOLEAN = "BOOLEAN",

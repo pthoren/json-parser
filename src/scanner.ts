@@ -33,6 +33,9 @@ export function scanner(source: string) {
       case ",":
         addToken(TokenType.COMMA);
         break;
+      case ":":
+        addToken(TokenType.COLON);
+        break;
       case '"':
         string();
         break;
@@ -81,10 +84,7 @@ export function scanner(source: string) {
 
     const value = Number.parseFloat(source.substring(start, current));
 
-    addToken(
-      TokenType.NUMBER,
-      value
-    );
+    addToken(TokenType.NUMBER, value);
   }
 
   function boolean(c: string) {

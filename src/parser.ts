@@ -2,22 +2,26 @@ import { Token, TokenType } from "./types";
 
 export function parser(tokens: Token[]) {
   let current = 0;
-  let json: any;
 
   function parseTokens() {
+    let json;
+
     while (!isAtEnd()) {
       json = parseToken();
       advance();
     }
+
+    return json;
   }
 
   function parseToken() {
     const token = advance();
-    console.debug("parseToken", token);
 
     switch (token.type) {
       case TokenType.LEFT_BRACKET:
         return array();
+      case TokenType.LEFT_BRACE:
+        return object();
       case TokenType.BOOLEAN:
       case TokenType.NUMBER:
         return token.literal;
@@ -26,35 +30,46 @@ export function parser(tokens: Token[]) {
     }
   }
 
-  /*
-    private Expr primary() {
-      if (match(FALSE)) return new Expr.Literal(false);
-      if (match(TRUE)) return new Expr.Literal(true);
-      if (match(NIL)) return new Expr.Literal(null);
-  
-      if (match(NUMBER, STRING)) {
-        return new Expr.Literal(previous().literal);
-      }
-  
-      if (match(LEFT_PAREN)) {
-        Expr expr = expression();
-        consume(RIGHT_PAREN, "Expect ')' after expression.");
-        return new Expr.Grouping(expr);
-      }
+  function value() {
+    if (match(TokenType.LEFT_BRACE)) {
+      return object();
+    } else if (match(TokenType.LEFT_BRACKET)) {
+      return array();
+    } else if (match(TokenType.NUMBER, TokenType.STRING, TokenType.BOOLEAN)) {
+      return previous().literal;
     }
-    */
+  }
+
+  function object() {
+    const ret: Record<string, any> = {};
+
+    let idx = 0;
+    while (!check(TokenType.RIGHT_BRACE)) {
+      if (idx > 0 && !match(TokenType.COMMA)) {
+        throw new Error("Missing comma");
+      }
+      const k = string();
+      consume(TokenType.COLON);
+      const v = value();
+      ret[k] = v;
+      idx++;
+    }
+
+    consume(TokenType.RIGHT_BRACE);
+
+    return ret;
+  }
 
   function array(): any[] {
     const values = [];
 
+    let idx = 0;
     while (!check(TokenType.RIGHT_BRACKET)) {
-      if (match(TokenType.LEFT_BRACKET)) {
-        values.push(array());
-      } else if (match(TokenType.COMMA)) {
-        values.push(value());
-      } else if (match(TokenType.NUMBER, TokenType.STRING, TokenType.BOOLEAN)) {
-        values.push(previous().literal);
+      if (idx > 0 && !match(TokenType.COMMA)) {
+        throw new Error("Missing comma");
       }
+      values.push(value());
+      idx++;
     }
 
     consume(TokenType.RIGHT_BRACKET);
@@ -62,12 +77,11 @@ export function parser(tokens: Token[]) {
     return values;
   }
 
-  function value() {
-    if (match(TokenType.LEFT_BRACKET)) {
-      return array();
-    } else if (match(TokenType.NUMBER, TokenType.STRING, TokenType.BOOLEAN)) {
+  function string() {
+    if (match(TokenType.STRING)) {
       return previous().literal;
     }
+    throw new Error("Missing string");
   }
 
   function advance() {
@@ -87,7 +101,11 @@ export function parser(tokens: Token[]) {
       }
     }
 
-    throw new Error(`Unexpected ${peek().type}`);
+    if (isAtEnd()) {
+      throw new Error(`Missing ${types}`);
+    } else {
+      throw new Error(`Unexpected ${peek().type}`);
+    }
   }
 
   function match(...types: TokenType[]) {
@@ -117,6 +135,6 @@ export function parser(tokens: Token[]) {
     return tokens[current - 1];
   }
 
-  parseTokens();
+  const json = parseTokens();
   return json;
 }
